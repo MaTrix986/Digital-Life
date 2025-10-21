@@ -4,11 +4,13 @@ import { useEffect, useState } from "react";
 import { socket } from "../socket";
 import InputBox from "@/app/ui/inputBox"
 import MsgList from "@/app/ui/msgList";
+import Info from "@/app/ui/info"
 
 export default function Home() {
   const [isConnected, setIsConnected] = useState(false);
   const [transport, setTransport] = useState("N/A");
   const [txt, setTxt] = useState("");
+  const [systemInfo, setSystemInfo] = useState({});
 
   useEffect(() => {
     if (socket.connected) {
@@ -34,7 +36,12 @@ export default function Home() {
 
     socket.on('chat message', (msg) =>{
       setTxt(msg.msg);
-    })
+    });
+
+
+    socket.on('info', (info) => {
+      setSystemInfo(info);
+    });
 
     return () => {
       socket.off("connect", onConnect);
@@ -48,6 +55,7 @@ export default function Home() {
       <p>Status: { isConnected ? "connected" : "disconnected" }</p>
       <p>Transport: { transport }</p>
       <MsgList msg={ txt } />
+      <Info systemInfo={ systemInfo } />
       <InputBox placeholder="say something..."/>
     </div>
   );

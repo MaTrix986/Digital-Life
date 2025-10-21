@@ -15,19 +15,17 @@ app.prepare().then(() => {
   const io = new Server(httpServer);
 
   io.on("connection", (socket)=> {
-    // use socket to handle each socket connection.
+    // use socket to handle each single socket connection.
     console.log('用户已连接:', socket.id);
-    
-    // 接收JSON数据并广播给所有客户端
-    socket.on('json-data', (data) => {
-      console.log('收到JSON数据:', data);
-      // 广播给所有连接的客户端
-      io.emit('json-data', data);
-    });
 
     socket.on('chat message', (msg) => {
-      console.log("eimt:", msg);
+      console.log("emit:", msg);
       io.emit('chat message', msg);
+    })
+
+    socket.on('system info', systemInfo => {
+      console.log("Recieve system info");
+      io.emit('info', systemInfo);
     })
     
     socket.on('disconnect', () => {
@@ -43,16 +41,4 @@ app.prepare().then(() => {
     .listen(port, () => {
       console.log(`> Ready on http://localhost:${port} as ${dev ? 'development' : process.env.NODE_ENV}`)
     })
-
-
-  // createServer((req, res) => {
-  //   const parsedUrl = parse(req.url, true)
-  //   handle(req, res, parsedUrl)
-  // }).listen(port)
- 
-  // console.log(
-  //   `> Server listening at http://localhost:${port} as ${
-  //     dev ? 'development' : process.env.NODE_ENV
-  //   }`
-  // )
 })
